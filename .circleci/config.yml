@@ -13,13 +13,7 @@ commands:
           command: |
             qemu-aarch64-static --version
             qemu-ppc64le-static --version
-      - run:
-          name: Create builder
-          command: |
-            export DOCKER_CLI_EXPERIMENTAL=enabled
-            docker buildx create --name multi-arch-builder
-            docker buildx use multi-arch-builder
-            docker buildx inspect --bootstrap
+      
 jobs:
   build:
     machine:
