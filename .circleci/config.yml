@@ -8,18 +8,17 @@ commands:
           command: |
             sudo apt-get update
             sudo apt-get install -y qemu-user-static
-            sudo apt-get install -y binfmt-support
       - run:
           name: Check versions
           command: |
             qemu-aarch64-static --version
-            update-binfmts --version 
+            qemu-ppc64le-static --version
       - run:
           name: Create builder
           command: |
             export DOCKER_CLI_EXPERIMENTAL=enabled
-            docker buildx create --name arm-builder
-            docker buildx use arm-builder
+            docker buildx create --name multi-arch-builder
+            docker buildx use multi-arch-builder
             docker buildx inspect --bootstrap
 jobs:
   build:
@@ -34,11 +33,9 @@ jobs:
       - run:
           name: Build multiarch docker image and push
           command: |
-            DOCKER_CLI_EXPERIMENTAL=enabled docker buildx build --platform linux/arm64,linux/amd64 --push -t quay.io/mayurwaghmode111/circleci-multi-arch .
+            DOCKER_CLI_EXPERIMENTAL=enabled docker buildx build --platform linux/arm64,kinux/ppc64le,linux/amd64 --push -t quay.io/mayurwaghmode111/circleci-multi-arch .
 workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - build:
-          context:
-            - QUAY.IO
+      - build
