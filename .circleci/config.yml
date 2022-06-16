@@ -38,6 +38,6 @@ jobs:
             DOCKER_CLI_EXPERIMENTAL=enabled docker buildx build --platform linux/ppc64le,linux/s390x,linux/arm64,linux/amd64 --push -t quay.io/mayurwaghmode111/circleci-multi-arch .
 workflows:
   version: 2.1
-  build-and-deploy:
+  build-and-push-multi-arch-image:
     jobs:
       - build
