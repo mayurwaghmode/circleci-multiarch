@@ -4,24 +4,11 @@ commands:
     steps:
       - checkout
       - run:
-          name: Install qemu
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y qemu-user-static
-      - run:
-          name: Check versions
-          command: |
-            qemu-ppc64le-static --version
-            qemu-s390x-static --version
-            qemu-aarch64-static --version
-            update-binfmts --version 
-      - run:
           name: Create builder
           command: |
             export DOCKER_CLI_EXPERIMENTAL=enabled
-            docker buildx create --name multi-arch-builder
-            docker buildx use multi-arch-builder
-            docker buildx inspect --bootstrap
+            docker context create multi-arch-build
+            docker buildx create --use multi-arch-build
 jobs:
   build:
     machine:
@@ -35,7 +22,7 @@ jobs:
       - run:
           name: Build multiarch docker image and push
           command: |
-            DOCKER_CLI_EXPERIMENTAL=enabled docker buildx build --platform linux/ppc64le,linux/s390x,linux/arm64,linux/amd64 --push -t quay.io/mayurwaghmode111/circleci-multi-arch .
+            docker buildx build --platform linux/ppc64le,linux/s390x,linux/arm64,linux/amd64 --push -t quay.io/mayurwaghmode111/circleci-multi-arch .
 workflows:
   version: 2.1
   build-and-push-multi-arch-image:
