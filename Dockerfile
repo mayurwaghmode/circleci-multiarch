@@ -1,11 +1,2 @@
-FROM debian:buster-slim
-
-LABEL maintainer="Nami Ops <namiops@gmail.com>"
-
-ENV PORT=1234
-
-RUN apt update && apt install -y netcat
-
-CMD nc -lv $PORT
-
-EXPOSE $PORT
+FROM ubuntu:20.04
+CMD echo "Hello World from a container running on $(uname -m);"
