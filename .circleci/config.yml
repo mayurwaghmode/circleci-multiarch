@@ -4,16 +4,24 @@ commands:
     steps:
       - checkout
       - run:
-          name: Setup buildx and qemu
+          name: Install qemu
           command: |
             sudo apt-get update
             sudo apt-get install -y qemu-user-static
       - run:
           name: Check versions
           command: |
-            qemu-aarch64-static --version
             qemu-ppc64le-static --version
-      
+            qemu-s390x-static --version
+            qemu-aarch64-static --version
+            update-binfmts --version 
+      - run:
+          name: Create builder
+          command: |
+            export DOCKER_CLI_EXPERIMENTAL=enabled
+            docker buildx create --name multi-arch-builder
+            docker buildx use multi-arch-builder
+            docker buildx inspect --bootstrap
 jobs:
   build:
     machine:
@@ -21,15 +29,15 @@ jobs:
     steps:
       - setup
       - run:
-          name: Login to Docker Hub
+          name: Login to QUAY.IO
           command: |
             docker login quay.io -u $QUAY_USER -p $QUAY_PASS
       - run:
           name: Build multiarch docker image and push
           command: |
-            DOCKER_CLI_EXPERIMENTAL=enabled docker buildx build --platform linux/arm64,linux/ppc64le,linux/amd64 --push -t quay.io/mayurwaghmode111/circleci-multi-arch .
+            DOCKER_CLI_EXPERIMENTAL=enabled docker buildx build --platform linux/ppc64le,linux/s390x,linux/arm64,linux/amd64 --push -t quay.io/mayurwaghmode111/circleci-multi-arch .
 workflows:
-  version: 2
+  version: 2.1
   build-and-deploy:
     jobs:
       - build
