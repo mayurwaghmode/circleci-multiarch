@@ -8,7 +8,6 @@ commands:
           command: |
             sudo apt-get update
             sudo apt-get install -y qemu-user-static
-            sudo apt-get install -y binfmt-support
       - run:
           name: Check versions
           command: |
